@@ -1,11 +1,22 @@
+Rails.application.routes.draw do
+  namespace :admin do
+    resources :feedback_reviews
+    resources :reviews do
+      member do
+        get :approve
+      end
+      resources :feedback_reviews
+    end
+    resource :review_settings
+  end
 
-
-map.namespace :admin do |admin|
-  admin.resources :reviews
-  admin.resource :review_settings
+  resources :products do
+    resources :reviews do
+      collection do
+        get :terms
+        get "submissionguidelines"
+      end
+    end
+  end
+  match "/reviews/:review_id/feedback(.:format)" => "feedback_reviews#create", :via => :post, :as => "feedback_review"
 end
-
-map.resources :products do |product|
-  product.resources :reviews # , :member => {:submit => :post}
-end
-

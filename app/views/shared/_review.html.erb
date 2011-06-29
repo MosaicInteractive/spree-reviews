@@ -1,11 +1,17 @@
 <div class="review">
-  <span title="<%=pluralize(review.rating, 'star')%> out of 5">
+  <span title="<%= txt_stars(review.rating) %>">
     <%= render :partial => "reviews/stars", :locals => {:stars => review.rating} %>
   </span>
-  &nbsp; <span class="title"><%=h review.title%> </span>
+  <% if review.user %>
+  <span><%= review.user.email %></span>
+  <% end %>
+  <span class="title">&nbsp; <%= review.title %> </span>
   <br/>
-  <span class="attribution">By <strong><%=h review.name%></strong> from <strong><%=h review.location%></strong> on <strong><%=review.created_at.strftime("%d/%m/%Y") %></strong></span>
-  <p>
-  <%=h review.review%>
-  </p>
+  <span class="attribution"><%= t('submitted_on') %> <strong><%= l review.created_at.to_date %></strong></span>
+  
+  <%= simple_format(review.review) %>
+  
+  <div class="feedback_review" id="feedback_review_<%= review.id %>">
+    <%= render :partial => "feedback_reviews/form", :locals => {:review => review} %>
+  </div>
 </div>

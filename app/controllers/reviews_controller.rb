@@ -1,6 +1,5 @@
 class ReviewsController < Spree::BaseController
   helper Spree::BaseHelper
-  require_role [:user,:admin], :only => [:new,:create]
 
   def index
     @product = Product.find_by_permalink params[:product_id]
@@ -17,13 +16,18 @@ class ReviewsController < Spree::BaseController
     @product = Product.find_by_permalink params[:product_id]
     params[:review][:rating].sub!(/\s*stars/,'') unless params[:review][:rating].blank?
 
-    @review = Review.new :product => @product
-    if @review.update_attributes(params[:review]) 
+    @review = Review.new
+    @review.product = @product
+    @review.user = current_user if user_signed_in?
+    if @review.update_attributes(params[:review])
       flash[:notice] = t('review_successfully_submitted')
       redirect_to (product_path(@product))
     else
       # flash[:notice] = 'There was a problem in the submitted review'
       render :action => "new" 
     end
+  end
+  
+  def terms
   end
 end
